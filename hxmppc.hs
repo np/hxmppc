@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Network.Protocol.XMPP (Message(..), MessageType(..), ReceivedStanza(..),
                               parseJID, getStanza, putStanza)
-import qualified Data.Text.Lazy as T
-import qualified Data.Text.Lazy.IO as T
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import Network (PortID(..))
 import System.Environment (getArgs)
 import System.Exit (exitSuccess, exitFailure)

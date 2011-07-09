@@ -14,8 +14,8 @@ module EasyXMPP (
   ) where
 
 import Network.Protocol.XMPP hiding (Node)
-import Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy as T
+import Data.Text (Text)
+import qualified Data.Text as T
 import Data.XML.Types (Element(..), Node(..), Content(..), Name(..))
 import Network (PortID(..), HostName)
 import Data.Maybe (catMaybes)
