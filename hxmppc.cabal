@@ -1,5 +1,5 @@
 Name:                hxmppc
-Version:             0.1
+Version:             0.2
 
 Synopsis:            Haskell XMPP (Jabber Client) Command Line Interface (CLI)
 
@@ -13,6 +13,7 @@ Cabal-version:       >=1.2
 
 Executable hxmppc
   Main-is:             hxmppc.hs
-  Build-depends:       base, text, xml-types, transformers, network, network-protocol-xmpp==0.4.*
+  Build-depends:       base, text, xml-types, transformers, network,
+                       network-protocol-xmpp==0.4.*, fclabels
   Other-modules:       EasyXMPP
   GHC-options:         -Wall
