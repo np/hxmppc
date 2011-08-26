@@ -47,6 +47,8 @@ usage msg = liftIO $ T.hPutStrLn stderr msg' >> exitFailure
                          ,"command ::= tell <destination-user> <message>*"
                          ,"          | wait"
                          ,""
+                         ,"NOTE: reads and sends message from stdin (line by line) if no argument is given to `tell'"
+                         ,""
                          ,msg
                          ]
 
@@ -65,11 +67,13 @@ main = do
     case map T.pack nonopts of
       "tell" : args -> do
         case args of
-          []  -> usage "`tell' expects a destination user and a message"
-          [_] -> usage "`tell' expects a message as well"
+          []  -> usage "`tell' expects a destination user and optionally a message"
           (to:msg) -> do
              toJID <- maybe (usage "`tell' bad format for destination user") return $ parseJID to
-             putStanza $ mkMsg toJID (T.unwords msg)
+             let say = putStanza . mkMsg toJID
+             if null msg
+               then mapM_ ((=<<) say) (repeat (liftIO T.getLine))
+               else say (T.unwords msg)
              _ <- getStanza
              liftIO exitSuccess
       "wait" : args -> do

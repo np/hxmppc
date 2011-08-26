@@ -1,5 +1,5 @@
 Name:                hxmppc
-Version:             0.2
+Version:             0.2.1
 
 Synopsis:            Haskell XMPP (Jabber Client) Command Line Interface (CLI)
 Description:         A simple command line interface to send and receive
