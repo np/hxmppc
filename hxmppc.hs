@@ -11,7 +11,7 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Data.Functor
 import EasyXMPP
-import Data.Record.Label
+import Data.Label
 -- import Control.Arrow
 import System.Console.GetOpt
 
@@ -34,11 +34,11 @@ defaultSettings = Settings { _user = ""
 
 options :: [OptDescr Flag]
 options =
-  [ Option "u" ["user"] (ReqArg (setL user . T.pack)             "USER") "Username (example: foo@jabber.org)"
-  , Option "p" ["pass"] (ReqArg (setL pass . T.pack)             "PASS") "Password"
-  , Option "h" ["host"] (ReqArg (setL host)                      "HOST") "Hostname (example: jabber.org)"
-  , Option "P" ["port"] (ReqArg (setL port . fromInteger . read) "PORT") "Port"
-  , Option "?" ["help"] (NoArg (setL help True))                         "Show this help message"
+  [ Option "u" ["user"] (ReqArg (set user . T.pack)             "USER") "Username (example: foo@jabber.org)"
+  , Option "p" ["pass"] (ReqArg (set pass . T.pack)             "PASS") "Password"
+  , Option "h" ["host"] (ReqArg (set host)                      "HOST") "Hostname (example: jabber.org)"
+  , Option "P" ["port"] (ReqArg (set port . fromInteger . read) "PORT") "Port"
+  , Option "?" ["help"] (NoArg (set help True))                         "Show this help message"
   ]
 
 usage :: MonadIO m => T.Text -> m b
@@ -57,13 +57,13 @@ main = do
   (flags, nonopts, errs) <- getOpt Permute options <$> getArgs
   let opts = foldr ($) defaultSettings flags
   when (not . null $ errs) $ usage (T.concat . map T.pack $ errs)
-  when (getL help opts) $ usage ""
-  when (T.null $ getL user opts) $ usage "Missing username"
-  when (T.null $ getL pass opts) $ usage "Missing password"
-  when (null   $ getL host opts) $ usage "Missing hostname"
-  let Just botJID = parseJID (getL user opts)
+  when (get help opts) $ usage ""
+  when (T.null $ get user opts) $ usage "Missing username"
+  when (T.null $ get pass opts) $ usage "Missing password"
+  when (null   $ get host opts) $ usage "Missing hostname"
+  let Just botJID = parseJID (get user opts)
 
-  res <- runPersistentClient (botJID, getL pass opts) (getL host opts, PortNumber (getL port opts)) $ do
+  res <- runPersistentClient (botJID, get pass opts) (get host opts, PortNumber (get port opts)) $ do
     case map T.pack nonopts of
       "tell" : args -> do
         case args of
