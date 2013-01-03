@@ -12,7 +12,6 @@ import Control.Monad.IO.Class
 import Data.Functor
 import EasyXMPP
 import Data.Label
--- import Control.Arrow
 import System.Console.GetOpt
 
 data Settings = Settings { _user :: T.Text
