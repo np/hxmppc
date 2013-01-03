@@ -22,7 +22,6 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Control.Concurrent
 import Data.Functor
-import Data.Monoid
 
 pBody :: [Node] -> Element
 pBody = Element (Name "body" (Just "jabber:client") Nothing) []
@@ -68,7 +67,7 @@ sendPings seconds s = forever send where
 pingName :: Name
 pingName = Name "ping" (Just "urn:xmpp:ping") Nothing
 
-runPersistentClient :: (JID, Text) -> (HostName, PortID) -> XMPP a -> IO (Either Error a)
+runPersistentClient :: (JID, Text) -> (HostName, Int) -> XMPP a -> IO (Either Error a)
 runPersistentClient (myJID, pass) (hostname, port) act =
   runClient server myJID username pass $ do
     -- Some servers will close the XMPP connection after some period
@@ -80,7 +79,8 @@ runPersistentClient (myJID, pass) (hostname, port) act =
     act
 
   where
-    server = Server (JID Nothing (jidDomain myJID) Nothing) hostname port
+    portid = PortNumber . fromIntegral $ port
+    server = Server (JID Nothing (jidDomain myJID) Nothing) hostname portid
     username = case strNode <$> jidNode myJID of
       Just x -> x
       Nothing -> error $ "JID must include a username"

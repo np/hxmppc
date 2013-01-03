@@ -3,7 +3,6 @@ import Network.Protocol.XMPP (Message(..), MessageType(..), ReceivedStanza(..),
                               parseJID, getStanza, putStanza)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Network (PortID(..), PortNumber)
 import System.Environment (getArgs)
 import System.Exit (exitSuccess, exitFailure)
 import System.IO (stderr)
@@ -18,7 +17,7 @@ import System.Console.GetOpt
 data Settings = Settings { _user :: T.Text
                          , _pass :: T.Text
                          , _host :: String
-                         , _port :: PortNumber
+                         , _port :: Int
                          , _help :: Bool
                          }
 makeLenses ''Settings
@@ -62,9 +61,9 @@ main = do
   when (opts^.user.to T.null) $ usage "Missing username"
   when (opts^.pass.to T.null) $ usage "Missing password"
   when (opts^.host.to   null) $ usage "Missing hostname"
-  let Just botJID = parseJID (view user opts)
+  let Just botJID = opts^.user.to parseJID
 
-  res <- runPersistentClient (botJID, view pass opts) (view host opts, PortNumber (view port opts)) $ do
+  res <- runPersistentClient (botJID, opts^.pass) (opts^.host, opts^.port) $ do
     case map T.pack nonopts of
       "tell" : args -> do
         case args of
