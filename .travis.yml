@@ -1,1 +1,3 @@
 language: haskell
+before_install:
+  - sudo apt-get install -qq libgsasl7 libgsasl7-dev
