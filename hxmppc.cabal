@@ -15,7 +15,7 @@ Cabal-version:       >=1.6
 
 Executable hxmppc
   Main-is:             hxmppc.hs
-  Build-depends:       base==4.3.*, text, xml-types, transformers, network,
+  Build-depends:       base >= 4 && < 5, text, xml-types, transformers, network,
                        network-protocol-xmpp==0.4.*, fclabels>=1.0
   Other-modules:       EasyXMPP
   GHC-options:         -Wall
