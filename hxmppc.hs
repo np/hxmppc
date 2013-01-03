@@ -12,7 +12,7 @@ import Control.Monad.IO.Class
 import Data.Functor
 import Data.Monoid
 import EasyXMPP
-import Data.Label
+import Control.Lens
 import System.Console.GetOpt
 
 data Settings = Settings { _user :: T.Text
@@ -21,7 +21,8 @@ data Settings = Settings { _user :: T.Text
                          , _port :: PortNumber
                          , _help :: Bool
                          }
-$(mkLabels [''Settings])
+makeLenses ''Settings
+
 type Flag = Settings -> Settings
 
 defaultSettings :: Settings
@@ -38,7 +39,7 @@ options =
   , Option "p" ["pass"] (ReqArg (set pass . T.pack)             "PASS") "Password"
   , Option "h" ["host"] (ReqArg (set host)                      "HOST") "Hostname (example: jabber.org)"
   , Option "P" ["port"] (ReqArg (set port . fromInteger . read) "PORT") "Port"
-  , Option "?" ["help"] (NoArg (set help True))                         "Show this help message"
+  , Option "?" ["help"] (NoArg  (help .~ True))                         "Show this help message"
   ]
 
 usage :: MonadIO m => T.Text -> m b
@@ -57,19 +58,19 @@ main = do
   (flags, nonopts, errs) <- getOpt Permute options <$> getArgs
   let opts = foldr ($) defaultSettings flags
   when (not . null $ errs) $ usage (T.concat . map T.pack $ errs)
-  when (get help opts) $ usage ""
-  when (T.null $ get user opts) $ usage "Missing username"
-  when (T.null $ get pass opts) $ usage "Missing password"
-  when (null   $ get host opts) $ usage "Missing hostname"
-  let Just botJID = parseJID (get user opts)
+  when (opts^.help) $ usage ""
+  when (opts^.user.to T.null) $ usage "Missing username"
+  when (opts^.pass.to T.null) $ usage "Missing password"
+  when (opts^.host.to   null) $ usage "Missing hostname"
+  let Just botJID = parseJID (view user opts)
 
-  res <- runPersistentClient (botJID, get pass opts) (get host opts, PortNumber (get port opts)) $ do
+  res <- runPersistentClient (botJID, view pass opts) (view host opts, PortNumber (view port opts)) $ do
     case map T.pack nonopts of
       "tell" : args -> do
         case args of
           []  -> usage "`tell' expects a destination user and optionally a message"
-          (to:msg) -> do
-             toJID <- maybe (usage "`tell' bad format for destination user") return $ parseJID to
+          (dst:msg) -> do
+             toJID <- maybe (usage "`tell' bad format for destination user") return $ parseJID dst
              let say = putStanza . mkMsg toJID
              if null msg
                then mapM_ ((=<<) say) (repeat (liftIO T.getLine))
