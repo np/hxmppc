@@ -10,6 +10,7 @@ import System.IO (stderr)
 import Control.Monad
 import Control.Monad.IO.Class
 import Data.Functor
+import Data.Monoid
 import EasyXMPP
 import Data.Label
 import System.Console.GetOpt

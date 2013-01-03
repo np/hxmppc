@@ -5,7 +5,6 @@ module EasyXMPP (
   extractMsg,
 
   -- more details
-  (<>),
   pBody,
   contentText,
   extractBody,
@@ -24,9 +23,6 @@ import Control.Monad.IO.Class
 import Control.Concurrent
 import Data.Functor
 import Data.Monoid
-
-(<>) :: Monoid m => m -> m -> m
-(<>) = mappend
 
 pBody :: [Node] -> Element
 pBody = Element (Name "body" (Just "jabber:client") Nothing) []
